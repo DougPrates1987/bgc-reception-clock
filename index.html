@@ -135,11 +135,7 @@ body:before{content:"";position:fixed;inset:0;pointer-events:none;background:rad
   .daypart-icon.day{color:#f4cc73}.daypart-icon.early{color:#b4c7ff}.daypart-icon.dawn{color:#f3a779}.daypart-icon.sunset{color:#f19976}.daypart-icon.night{color:#a9c9ff}
   @media(max-width:680px){.city-title-line{gap:4px}.daypart-icon{width:16px;height:16px;flex-basis:16px}.daypart-label{font-size:6px;letter-spacing:.35px}}
 </style>
-<style id="bgc-synchronized-wordmark-colors">
-.logo-transition img{animation:bgc-wordmark-color-match var(--cyc) ease-in-out infinite}
-@keyframes bgc-wordmark-color-match{0%,8%,92%,100%{filter:hue-rotate(0deg)}22%,30%,70%,78%{filter:hue-rotate(169deg)}44%,56%{filter:hue-rotate(174deg)}}
-@media(prefers-reduced-motion:reduce){.logo-transition img{animation:none;filter:none}}
-</style>
+
 <style id="bgc-fit-every-screen">
 @media(min-width:681px){
   .page{width:min(100%,1420px);padding:clamp(8px,1.7vh,18px) clamp(14px,3vw,44px) 10px}
@@ -263,9 +259,14 @@ body:before{content:"";position:fixed;inset:0;pointer-events:none;background:rad
 @media(prefers-reduced-motion:reduce){.topline{animation:none!important}}
 </style>
 
-<style id="bgc-audio-status-style">
-#bgc-audio-status{position:fixed;right:12px;bottom:12px;z-index:20;max-width:min(360px,90vw);padding:9px 12px;border:1px solid rgba(255,190,130,.45);border-radius:7px;background:rgba(3,11,27,.92);color:#ffe2bd;font:12px/1.4 Calibri,Arial,sans-serif;box-shadow:0 6px 20px rgba(0,0,0,.28)}
-#bgc-audio-status[hidden]{display:none}
+<style id="bgc-wordmark-sync-final">
+.logo-transition img{animation:bgc-wordmark-color-match-final var(--cyc) ease-in-out infinite!important}
+@keyframes bgc-wordmark-color-match-final{
+  0%,8%,92%,100%{filter:hue-rotate(0deg)}
+  22%,30%,70%,78%{filter:hue-rotate(169deg)}
+  44%,56%{filter:hue-rotate(174deg)}
+}
+@media(prefers-reduced-motion:reduce){.logo-transition img{animation:none!important;filter:hue-rotate(0deg)}}
 </style>
 </head>
 <body>
@@ -393,26 +394,18 @@ sortClocks();updateClocks();setInterval(updateClocks,1000);setInterval(sortClock
 </script>
 
 <audio id="bgc-hymn-player" autoplay preload="auto" playsinline></audio>
-<div id="bgc-audio-status" role="status" aria-live="polite" hidden></div>
 <script id="bgc-hymn-autoplay">
 (()=>{
-  // Add future hymn filenames to this list; playback advances and repeats the full list.
   const hymns=['https://github.com/DougPrates1987/bgc-reception-clock/releases/download/v1.0.0-test/ccb-hino-01.mp3'];
   const player=document.getElementById('bgc-hymn-player');
-  const notice=document.getElementById('bgc-audio-status');
   let current=0;
   player.volume=1;
   player.addEventListener('ended',()=>{current=(current+1)%hymns.length;start();});
-  player.addEventListener('playing',()=>{notice.hidden=true;});
-  player.addEventListener('error',()=>{notice.textContent='Não consegui acessar o áudio hospedado para este teste. Verifique a conexão da TV.';notice.hidden=false;});
   function start(){
     player.src=new URL(encodeURI(hymns[current]),document.baseURI).href;
     player.load();
     const attempt=player.play();
-    if(attempt&&typeof attempt.catch==='function')attempt.catch(()=>{
-      notice.textContent='O navegador da TV bloqueou o início automático do som. Ative a reprodução automática de áudio nas permissões do navegador.';
-      notice.hidden=false;
-    });
+    if(attempt&&typeof attempt.catch==='function')attempt.catch(()=>{});
   }
   start();
 })();
