@@ -263,6 +263,69 @@ body:before{content:"";position:fixed;inset:0;pointer-events:none;background:rad
 @keyframes bgc-wordmark-color-match-final{0%,8%,92%,100%{filter:hue-rotate(0deg)}22%,30%,70%,78%{filter:hue-rotate(169deg)}44%,56%{filter:hue-rotate(174deg)}}
 @media(prefers-reduced-motion:reduce){.logo-transition img{animation:none!important;filter:hue-rotate(0deg)}}
 </style>
+
+<style id="bgc-impact-effects">
+/* ===== Fundo vivo: partículas de luz (canvas) ===== */
+#bgc-sky{position:fixed;inset:0;width:100%;height:100%;z-index:0;pointer-events:none;display:block}
+
+/* ===== Logo em destaque: halo pulsando na cor do ciclo + brilho passando ===== */
+/* Contorno fino de luz nas bordas da logo; o hue-rotate leva a luz junto com a troca de cores */
+@keyframes bgc-wordmark-glow{0%,8%,92%,100%{filter:drop-shadow(0 0 1px rgba(126,240,232,.95)) drop-shadow(0 0 4px rgba(83,211,202,.45)) hue-rotate(0deg)}22%,30%,70%,78%{filter:drop-shadow(0 0 1px rgba(126,240,232,.95)) drop-shadow(0 0 4px rgba(83,211,202,.45)) hue-rotate(169deg)}44%,56%{filter:drop-shadow(0 0 1px rgba(126,240,232,.95)) drop-shadow(0 0 4px rgba(83,211,202,.45)) hue-rotate(174deg)}}
+.logo-transition img{animation:bgc-wordmark-glow var(--cyc) ease-in-out infinite!important}
+.bgc-shine{position:absolute;inset:0;pointer-events:none;z-index:2;
+  -webkit-mask-size:100% 100%;mask-size:100% 100%;-webkit-mask-repeat:no-repeat;mask-repeat:no-repeat;-webkit-mask-position:center;mask-position:center;
+  background:linear-gradient(105deg,transparent 38%,rgba(255,255,255,.9) 50%,transparent 62%) no-repeat;background-size:260% 100%;background-position:160% 0;
+  animation:bgc-shine 7s ease-in-out infinite}
+@keyframes bgc-shine{0%,68%{background-position:160% 0}92%,100%{background-position:-60% 0}}
+
+/* ===== Relógios mais elegantes ===== */
+.clock:before{content:"";position:absolute;left:14%;right:14%;top:0;height:1px;pointer-events:none;
+  background:linear-gradient(90deg,transparent,rgba(83,211,202,.75),transparent);opacity:.55}
+.clock.primary:before{opacity:1;left:8%;right:8%}
+.clock .time{text-shadow:0 0 18px rgba(83,211,202,.18),0 3px 15px rgba(0,0,0,.12)}
+.clock.bgc-tick{animation:bgc-tick 2.2s ease-out}
+.clock.bgc-tick:before{animation:bgc-tick-line 2.2s ease-out}
+.clock.bgc-tick .time{animation:bgc-tick-time 2.2s ease-out}
+@keyframes bgc-tick{0%{box-shadow:0 0 0 1px rgba(83,211,202,.85),0 0 30px rgba(30,189,184,.42),inset 0 0 26px rgba(30,189,184,.16)}100%{box-shadow:0 0 0 1px rgba(83,211,202,0),0 0 0 rgba(30,189,184,0),inset 0 0 0 rgba(30,189,184,0)}}
+@keyframes bgc-tick-line{0%{opacity:1;left:0;right:0}100%{opacity:.55;left:14%;right:14%}}
+@keyframes bgc-tick-time{0%{text-shadow:0 0 22px rgba(126,240,232,.85)}100%{text-shadow:0 0 18px rgba(83,211,202,.18)}}
+
+/* ===== Vinheta: tela escurece e a logo aparece grande, trocando de cores ===== */
+#bgc-vignette{--vcyc:8s;position:fixed;inset:0;z-index:50;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:clamp(14px,3.2vh,40px);
+  background:radial-gradient(ellipse 70% 60% at 50% 46%,#082238,#020814 72%) #020814;
+  opacity:0;visibility:hidden;pointer-events:none;transition:opacity 1.4s ease,visibility 0s linear 1.4s}
+#bgc-vignette.show{opacity:1;visibility:visible;transition:opacity 1.4s ease}
+#bgc-vignette .v-stage{position:relative;width:min(36vh,40vw);aspect-ratio:850/920;display:flex;align-items:center;justify-content:center}
+#bgc-vignette .v-emblem{position:relative;width:100%;height:auto;overflow:visible;opacity:0;transform:scale(.82)}
+#bgc-vignette .v-emblem use{fill:url(#gradV);stroke:url(#gradV);stroke-width:5;stroke-linejoin:round;stroke-dasharray:1;stroke-dashoffset:1;fill-opacity:0}
+#bgc-vignette .v-logo{position:relative;width:min(74vw,820px);aspect-ratio:1207/286;opacity:0;transform:translateY(18px);filter:saturate(1.35) contrast(1.08)}
+#bgc-vignette .v-logo img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain}
+#bgc-vignette .v-praise{font:400 clamp(12px,1.4vw,20px)/1.4 Georgia,'Times New Roman',serif;letter-spacing:clamp(3px,.6vw,8px);color:#f0f7fa;opacity:0}
+#bgc-vignette.show .v-emblem{animation:bgc-v-pop 1.7s cubic-bezier(.2,.8,.2,1) .25s forwards,bgc-v-float 4s ease-in-out 2s infinite}
+#bgc-vignette.show .v-emblem use{animation:bgc-v-draw 2.6s cubic-bezier(.65,0,.35,1) .3s forwards}
+#bgc-vignette.show .v-emblem use.m{animation-delay:.6s}
+#bgc-vignette.show .v1{animation:bgc-v-s1 var(--vcyc) ease-in-out forwards}
+#bgc-vignette.show .v2{animation:bgc-v-s2 var(--vcyc) ease-in-out forwards}
+#bgc-vignette.show .v3{animation:bgc-v-s3 var(--vcyc) ease-in-out forwards}
+#bgc-vignette.show .v-logo{animation:bgc-v-rise 1.4s cubic-bezier(.2,.8,.2,1) 1.4s forwards}
+#bgc-vignette.show .v-logo img{animation:bgc-v-hue var(--vcyc) ease-in-out forwards}
+#bgc-vignette.show .v-logo .bgc-shine{animation:bgc-shine 4s ease-in-out 1.2s infinite}
+#bgc-vignette.show .v-praise{animation:bgc-v-fade 1.6s ease 2.4s forwards}
+@keyframes bgc-v-s1{0%,6%{stop-color:#6fe8e2}24%,30%{stop-color:#ee88a2}46%,56%{stop-color:#f37c8e}72%,78%{stop-color:#ee88a2}94%,100%{stop-color:#6fe8e2}}
+@keyframes bgc-v-s2{0%,6%{stop-color:#1fbdb7}24%,30%{stop-color:#E1325F}46%,56%{stop-color:#EB1E3C}72%,78%{stop-color:#E1325F}94%,100%{stop-color:#1fbdb7}}
+@keyframes bgc-v-s3{0%,6%{stop-color:#0b807c}24%,30%{stop-color:#8c1f3b}46%,56%{stop-color:#921325}72%,78%{stop-color:#8c1f3b}94%,100%{stop-color:#0b807c}}
+@keyframes bgc-v-hue{0%,6%,94%,100%{filter:drop-shadow(0 0 1.5px rgba(126,240,232,.95)) drop-shadow(0 0 6px rgba(83,211,202,.45)) hue-rotate(0deg)}24%,30%,72%,78%{filter:drop-shadow(0 0 1.5px rgba(126,240,232,.95)) drop-shadow(0 0 6px rgba(83,211,202,.45)) hue-rotate(169deg)}46%,56%{filter:drop-shadow(0 0 1.5px rgba(126,240,232,.95)) drop-shadow(0 0 6px rgba(83,211,202,.45)) hue-rotate(174deg)}}
+@keyframes bgc-v-pop{to{opacity:1;transform:scale(1)}}
+@keyframes bgc-v-float{0%,100%{translate:0 6px}50%{translate:0 -8px}}
+@keyframes bgc-v-draw{0%{stroke-dashoffset:1;fill-opacity:0}55%{stroke-dashoffset:0;fill-opacity:0}100%{stroke-dashoffset:0;fill-opacity:1}}
+@keyframes bgc-v-rise{to{opacity:1;transform:none}}
+@keyframes bgc-v-fade{to{opacity:.85}}
+
+@media(prefers-reduced-motion:reduce){
+  .bgc-shine,.clock.bgc-tick,.clock.bgc-tick:before,.clock.bgc-tick .time{animation:none!important}
+  #bgc-vignette{display:none!important}
+}
+</style>
 </head>
 <body>
 <main class="page">
@@ -386,6 +449,109 @@ function updateClocks(){
   });
 }
 sortClocks();updateClocks();setInterval(updateClocks,1000);setInterval(sortClocks,60000);
+</script>
+
+<script id="bgc-impact-effects-js">
+(()=>{
+  /* ---- Ajustes fáceis ---- */
+  const VIGNETTE_FIRST_SECONDS = 20;   // primeira vinheta depois de carregar
+  const VIGNETTE_EVERY_SECONDS = 120;  // intervalo entre vinhetas
+  const VIGNETTE_SHOW_SECONDS  = 10;   // quanto tempo a logo fica em tela cheia
+
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const logo = document.querySelector('.logo-transition img');
+
+  /* ===== Brilho passando sobre a logo (recortado no formato da logo) ===== */
+  function addShine(box, src){
+    const s = document.createElement('span');
+    s.className = 'bgc-shine';
+    s.style.webkitMaskImage = s.style.maskImage = `url("${src}")`;
+    box.append(s);
+  }
+  if (logo) addShine(logo.parentElement, logo.src);
+
+  /* ===== Vinheta ===== */
+  const v = document.createElement('div');
+  v.id = 'bgc-vignette';
+  v.setAttribute('aria-hidden','true');
+  v.innerHTML =
+    '<div class="v-stage">' +
+    '<svg class="v-emblem" viewBox="250 280 850 920" xmlns="http://www.w3.org/2000/svg"><defs>' +
+    '<linearGradient id="gradV" gradientUnits="userSpaceOnUse" x1="330" x2="1020" y1="330" y2="1020">' +
+    '<stop offset="0" class="v1" stop-color="#6fe8e2"/><stop offset=".45" class="v2" stop-color="#1fbdb7"/><stop offset="1" class="v3" stop-color="#0b807c"/>' +
+    '</linearGradient></defs><use href="#moldura"/><use class="m" href="#monograma"/></svg></div>' +
+    '<div class="v-logo"><img alt=""></div>' +
+    '<div class="v-praise">ALL PRAISE BE TO GOD</div>';
+  document.body.append(v);
+  if (logo){
+    const vbox = v.querySelector('.v-logo');
+    vbox.querySelector('img').src = logo.src;
+    addShine(vbox, logo.src);
+  }
+  function showVignette(){
+    v.classList.remove('show');
+    void v.offsetWidth;               // reinicia as animações
+    v.classList.add('show');
+    setTimeout(()=>v.classList.remove('show'), VIGNETTE_SHOW_SECONDS*1000);
+  }
+  if (!reduce){
+    setTimeout(()=>{ showVignette(); setInterval(showVignette, VIGNETTE_EVERY_SECONDS*1000); }, VIGNETTE_FIRST_SECONDS*1000);
+  }
+
+  /* ===== Brilho nos relógios quando o minuto vira ===== */
+  const lastMinute = new WeakMap();
+  setInterval(()=>{
+    document.querySelectorAll('.clock').forEach(card=>{
+      const t = card.querySelector('.time');
+      const m = (t.textContent.match(/:(\d\d):/) || [])[1];
+      if (m === undefined) return;
+      if (lastMinute.has(card) && lastMinute.get(card) !== m){
+        card.classList.remove('bgc-tick'); void card.offsetWidth; card.classList.add('bgc-tick');
+      }
+      lastMinute.set(card, m);
+    });
+  }, 500);
+  document.addEventListener('animationend', e=>{
+    if (e.animationName === 'bgc-tick') e.target.classList.remove('bgc-tick');
+  });
+
+  /* ===== Fundo: partículas de luz ===== */
+  const c = document.createElement('canvas');
+  c.id = 'bgc-sky';
+  c.setAttribute('aria-hidden','true');
+  document.body.prepend(c);
+  const ctx = c.getContext('2d');
+  let W=0, H=0, parts=[];
+  const rnd = (a,b)=>a+Math.random()*(b-a);
+  const mk = anyY => ({x:rnd(0,W), y:anyY?rnd(0,H):H+8, r:rnd(.4,1.9), vy:-rnd(.05,.24), vx:rnd(-.06,.06), a:rnd(.18,.7), p:rnd(0,6.28), s:rnd(.006,.024)});
+  function size(){
+    const d = Math.min(window.devicePixelRatio||1, 1.5);
+    W = innerWidth; H = innerHeight;
+    c.width = Math.round(W*d); c.height = Math.round(H*d);
+    ctx.setTransform(d,0,0,d,0,0);
+    const n = Math.round(Math.min(110, Math.max(35, W*H/18000)));
+    parts = Array.from({length:n}, ()=>mk(true));
+  }
+  function draw(time){
+    ctx.clearRect(0,0,W,H);
+        // partículas
+    for (const q of parts){
+      q.x += q.vx; q.y += q.vy; q.p += q.s;
+      if (q.y < -10 || q.x < -10 || q.x > W+10) Object.assign(q, mk(false));
+      const a = q.a * (.55 + .45*Math.sin(q.p));
+      ctx.beginPath(); ctx.arc(q.x,q.y,q.r*3,0,6.283); ctx.fillStyle=`rgba(30,189,184,${a*.12})`; ctx.fill();
+      ctx.beginPath(); ctx.arc(q.x,q.y,q.r,0,6.283); ctx.fillStyle=`rgba(170,250,244,${a})`; ctx.fill();
+    }
+  }
+  size(); addEventListener('resize', size);
+  if (reduce){ draw(0); return; }
+  let last = 0;
+  (function loop(t){
+    requestAnimationFrame(loop);
+    if (t - last < 33) return;      // ~30 quadros por segundo, leve para TV
+    last = t; draw(t);
+  })(0);
+})();
 </script>
 
 <audio id="bgc-hymn-player" autoplay preload="auto" playsinline></audio>
