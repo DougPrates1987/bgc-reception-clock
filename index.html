@@ -326,6 +326,34 @@ body:before{content:"";position:fixed;inset:0;pointer-events:none;background:rad
   #bgc-vignette{display:none!important}
 }
 </style>
+
+<style id="bgc-mobile-orientation-responsive-fix">
+/* Phone rotation: preserve centered branding and prevent fixed-height card clipping. */
+@media (max-width:1100px) and (orientation:landscape) and (max-height:600px){
+ html,body{height:auto;min-height:100%;overflow-x:hidden;overflow-y:auto}
+ .page{width:100%!important;height:auto!important;min-height:100svh!important;overflow:visible!important;padding:10px 14px 14px!important;align-items:center}
+ .topline{width:100%;text-align:center;font-size:clamp(10px,1.5vw,13px)!important;letter-spacing:1.5px!important;padding-bottom:3px!important}
+ .topline:after{margin:4px auto 0!important}
+ .brand{width:100%;max-width:100%;display:flex!important;flex-direction:column!important;align-items:center!important;justify-content:center!important;gap:0!important;margin:3px auto 5px!important;flex:none}
+ .brand:before{left:50%;top:0;transform:translateX(-50%)}
+ .loader{width:clamp(40px,7vh,60px)!important;margin:0 auto!important;flex:none}
+ .logo-transition{width:min(40vw,215px)!important;max-width:100%;margin:0 auto!important;flex:none}
+ .brand img{max-height:none!important}
+ .title{font-size:clamp(16px,2.4vw,21px)!important;margin:3px 0 1px!important;text-align:center}
+ .subtitle{font-size:7px!important;text-align:center}
+ .statusline{width:100%;margin:7px 0 6px!important;gap:8px;flex-wrap:wrap;font-size:8px}
+ .grid{width:100%;flex:none!important;display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;grid-template-rows:none!important;grid-auto-rows:minmax(105px,auto)!important;gap:8px!important;margin:0!important;transform:none!important;align-content:start!important}
+ .clock{min-width:0!important;min-height:105px!important;height:auto!important;padding:9px 11px!important;overflow:hidden}
+ .clock .time,.clock.primary .time{font-size:clamp(17px,2.7vw,23px)!important}
+ .clock.has-dual-time .time{font-size:clamp(11px,1.6vw,15px)!important}
+ .footer{width:100%;margin-top:10px!important;flex-wrap:wrap;gap:5px;font-size:8px}
+}
+@media (max-width:680px) and (orientation:portrait){
+ .brand{width:100%;align-items:center;margin-left:auto!important;margin-right:auto!important}
+ .logo-transition{margin-left:auto!important;margin-right:auto!important}
+ .grid{grid-template-rows:none!important;grid-auto-rows:minmax(118px,auto)}
+}
+</style>
 </head>
 <body>
 <main class="page">
