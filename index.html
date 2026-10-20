@@ -135,7 +135,6 @@ body:before{content:"";position:fixed;inset:0;pointer-events:none;background:rad
   .daypart-icon.day{color:#f4cc73}.daypart-icon.early{color:#b4c7ff}.daypart-icon.dawn{color:#f3a779}.daypart-icon.sunset{color:#f19976}.daypart-icon.night{color:#a9c9ff}
   @media(max-width:680px){.city-title-line{gap:4px}.daypart-icon{width:16px;height:16px;flex-basis:16px}.daypart-label{font-size:6px;letter-spacing:.35px}}
 </style>
-
 <style id="bgc-fit-every-screen">
 @media(min-width:681px){
   .page{width:min(100%,1420px);padding:clamp(8px,1.7vh,18px) clamp(14px,3vw,44px) 10px}
@@ -261,11 +260,7 @@ body:before{content:"";position:fixed;inset:0;pointer-events:none;background:rad
 
 <style id="bgc-wordmark-sync-final">
 .logo-transition img{animation:bgc-wordmark-color-match-final var(--cyc) ease-in-out infinite!important}
-@keyframes bgc-wordmark-color-match-final{
-  0%,8%,92%,100%{filter:hue-rotate(0deg)}
-  22%,30%,70%,78%{filter:hue-rotate(169deg)}
-  44%,56%{filter:hue-rotate(174deg)}
-}
+@keyframes bgc-wordmark-color-match-final{0%,8%,92%,100%{filter:hue-rotate(0deg)}22%,30%,70%,78%{filter:hue-rotate(169deg)}44%,56%{filter:hue-rotate(174deg)}}
 @media(prefers-reduced-motion:reduce){.logo-transition img{animation:none!important;filter:hue-rotate(0deg)}}
 </style>
 </head>
@@ -401,6 +396,20 @@ sortClocks();updateClocks();setInterval(updateClocks,1000);setInterval(sortClock
   let current=0;
   player.volume=1;
   player.addEventListener('ended',()=>{current=(current+1)%hymns.length;start();});
+  const unlockWithGesture=()=>{
+    if(!player.paused)return;
+    const attempt=player.play();
+    if(attempt&&typeof attempt.catch==='function')attempt.catch(()=>{});
+  };
+  const removeUnlockListeners=()=>{
+    document.removeEventListener('pointerdown',unlockWithGesture);
+    document.removeEventListener('keydown',unlockWithGesture);
+  };
+  player.addEventListener('playing',removeUnlockListeners,{once:true});
+  // Browsers may block sound on page load. A click/tap or remote key anywhere
+  // in the page retries playback without adding a visible Play button.
+  document.addEventListener('pointerdown',unlockWithGesture);
+  document.addEventListener('keydown',unlockWithGesture);
   function start(){
     player.src=new URL(encodeURI(hymns[current]),document.baseURI).href;
     player.load();
