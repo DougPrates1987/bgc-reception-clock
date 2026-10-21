@@ -368,15 +368,12 @@ body:before{content:"";position:fixed;inset:0;pointer-events:none;background:rad
 
 
 <style id="bgc-tv-logo-and-performance">
-.loader .s1{animation:s1 var(--cyc) ease-in-out infinite!important}
-.loader .s2{animation:s2 var(--cyc) ease-in-out infinite!important}
-.loader .s3{animation:s3 var(--cyc) ease-in-out infinite!important}
-.logo-transition img{animation:bgc-wordmark-glow var(--cyc) ease-in-out infinite!important;filter:none!important}
+:root{--logo-cycle:8s}
+.loader .s1{animation:s1 var(--logo-cycle) ease-in-out infinite!important}
+.loader .s2{animation:s2 var(--logo-cycle) ease-in-out infinite!important}
+.loader .s3{animation:s3 var(--logo-cycle) ease-in-out infinite!important}
+.logo-transition img{animation:bgc-wordmark-glow var(--logo-cycle) ease-in-out infinite!important;filter:none!important}
 .logo-transition{filter:none!important}
-@media(prefers-reduced-motion:reduce){
-  .loader .s1,.loader .s2,.loader .s3{animation:none!important;stop-color:#1ebdb8!important}
-  .logo-transition img{animation:none!important;filter:none!important}
-}
 </style>
 </head>
 <body>
