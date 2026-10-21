@@ -367,6 +367,12 @@ body:before{content:"";position:fixed;inset:0;pointer-events:none;background:rad
 
 
 
+<style id="bgc-tv-logo-and-performance">
+.loader .s1,.loader .s2,.loader .s3{animation:none!important;stop-color:#1ebdb8!important}
+.logo-transition img{animation:none!important;filter:brightness(0) saturate(100%) invert(67%) sepia(74%) saturate(510%) hue-rotate(128deg) brightness(94%) contrast(91%)!important}
+.logo-transition{filter:none!important}
+@media (prefers-reduced-motion:reduce){.clock,.clock:after{transition:none!important;animation:none!important}}
+</style>
 </head>
 <body>
 <main class="page">
@@ -434,6 +440,7 @@ const timeFmt = new Map();
 const dateFmt = new Map();
 const zoneFmt = new Map();
 const sortFmt = new Map();
+const daypartFmt = new Map();
 document.querySelectorAll('.clock').forEach(card=>{
   const dial=document.createElement('div');
   dial.className='analog-face';
@@ -452,6 +459,7 @@ document.querySelectorAll('.clock').forEach(card=>{
   dateFmt.set(zone,new Intl.DateTimeFormat('en-GB',{timeZone:zone,weekday:'short',day:'2-digit',month:'short',year:'numeric'}));
   zoneFmt.set(zone,new Intl.DateTimeFormat('en-GB',{timeZone:zone,timeZoneName:'short'}));
   sortFmt.set(zone,new Intl.DateTimeFormat('en-GB',{timeZone:zone,year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit',hourCycle:'h23'}));
+  daypartFmt.set(zone,new Intl.DateTimeFormat('en-GB',{timeZone:zone,hour:'2-digit',minute:'2-digit',second:'2-digit',hourCycle:'h23'}));
   });
 });
 function sortClocks(){
@@ -479,7 +487,7 @@ function updateClocks(){
       else{card.classList.add('has-dual-time');timeEl.innerHTML=`<span class="dual-time-row"><span class="dual-time-label">LAS VEGAS</span><span>${mainTime}</span></span><span class="dual-time-row"><span class="dual-time-label">TUCSON</span><span>${altTime}</span></span>`;card.querySelector('.zone').textContent=`${zoneName(zone)} / ${zoneName(altZone)}`;}
     }else{timeEl.textContent=timeFmt.get(zone).format(now);card.querySelector('.zone').textContent=zoneName(zone);}
     card.querySelector('.date').textContent=dateFmt.get(zone).format(now);
-    const parts=Object.fromEntries(new Intl.DateTimeFormat('en-GB',{timeZone:zone,hour:'2-digit',minute:'2-digit',second:'2-digit',hourCycle:'h23'}).formatToParts(now).map(part=>[part.type,part.value]));
+    const parts=Object.fromEntries(daypartFmt.get(zone).formatToParts(now).map(part=>[part.type,part.value]));
     const localHour=Number(parts.hour);
     const daypartData=localHour<5?['early','EARLY AM','<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M18.5 15.5A7 7 0 0 1 8.5 5.2 7 7 0 1 0 18.5 15.5Z"/><path d="M17 3v3m-1.5-1.5h3M5 10v2m-1-1h2"/></svg>']:localHour>=5&&localHour<7?['dawn','DAWN','<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 17h18M5 21h14"/><path d="M7 17a5 5 0 0 1 10 0"/><path d="M12 3v2M4.9 7l1.4 1.4M19.1 7l-1.4 1.4"/></svg>']:localHour>=7&&localHour<17?['day','DAY','<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.42 1.42m11.3 11.3 1.42 1.42M2 12h2m16 0h2M4.93 19.07l1.42-1.42m11.3-11.3 1.42-1.42"/></svg>']:localHour>=17&&localHour<19?['sunset','SUNSET','<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 17h18M5 21h14"/><path d="M7 17a5 5 0 0 1 10 0"/><path d="M12 3v2M4.9 7l1.4 1.4M19.1 7l-1.4 1.4"/><path d="M12 7v4"/></svg>']:['night','NIGHT','<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M19.5 15.5A8 8 0 0 1 8.5 4.5 8 8 0 1 0 19.5 15.5Z"/><path d="M17 4v3m-1.5-1.5h3M5 11v2m-1-1h2"/></svg>'];
     const icon=card.querySelector('.daypart-icon');icon.className=`daypart-icon ${daypartData[0]}`;icon.innerHTML=daypartData[2];icon.setAttribute('aria-label',daypartData[1]);card.querySelector('.daypart-label').textContent=daypartData[1];
@@ -492,140 +500,82 @@ function updateClocks(){
 sortClocks();updateClocks();setInterval(updateClocks,1000);setInterval(sortClocks,60000);
 </script>
 
-<script id="bgc-impact-effects-js">
-(()=>{
-  /* ---- Ajustes fáceis ---- */
-  const VIGNETTE_FIRST_SECONDS = 20;   // primeira vinheta depois de carregar
-  const VIGNETTE_EVERY_SECONDS = 120;  // intervalo entre vinhetas
-  const VIGNETTE_SHOW_SECONDS  = 10;   // quanto tempo a logo fica em tela cheia
+<!-- TV performance: omit particle canvas, logo shine and periodic full-screen animation. -->
 
-  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
-  const logo = document.querySelector('.logo-transition img');
 
-  /* ===== Brilho passando sobre a logo (recortado no formato da logo) ===== */
-  function addShine(box, src){
-    const s = document.createElement('span');
-    s.className = 'bgc-shine';
-    s.style.webkitMaskImage = s.style.maskImage = `url("${src}")`;
-    box.append(s);
-  }
-  if (logo) addShine(logo.parentElement, logo.src);
 
-  /* ===== Vinheta ===== */
-  const v = document.createElement('div');
-  v.id = 'bgc-vignette';
-  v.setAttribute('aria-hidden','true');
-  v.innerHTML =
-    '<div class="v-stage">' +
-    '<svg class="v-emblem" viewBox="250 280 850 920" xmlns="http://www.w3.org/2000/svg"><defs>' +
-    '<linearGradient id="gradV" gradientUnits="userSpaceOnUse" x1="330" x2="1020" y1="330" y2="1020">' +
-    '<stop offset="0" class="v1" stop-color="#6fe8e2"/><stop offset=".45" class="v2" stop-color="#1fbdb7"/><stop offset="1" class="v3" stop-color="#0b807c"/>' +
-    '</linearGradient></defs><use href="#moldura"/><use class="m" href="#monograma"/></svg></div>' +
-    '<div class="v-logo"><img alt=""></div>' +
-    '<div class="v-praise">ALL PRAISE BE TO GOD</div>';
-  document.body.append(v);
-  if (logo){
-    const vbox = v.querySelector('.v-logo');
-    vbox.querySelector('img').src = logo.src;
-    addShine(vbox, logo.src);
-  }
-  function showVignette(){
-    v.classList.remove('show');
-    void v.offsetWidth;               // reinicia as animações
-    v.classList.add('show');
-    setTimeout(()=>v.classList.remove('show'), VIGNETTE_SHOW_SECONDS*1000);
-  }
-  if (!reduce){
-    setTimeout(()=>{ showVignette(); setInterval(showVignette, VIGNETTE_EVERY_SECONDS*1000); }, VIGNETTE_FIRST_SECONDS*1000);
-  }
-
-  /* ===== Brilho nos relógios quando o minuto vira ===== */
-  const lastMinute = new WeakMap();
-  setInterval(()=>{
-    document.querySelectorAll('.clock').forEach(card=>{
-      const t = card.querySelector('.time');
-      const m = (t.textContent.match(/:(\d\d):/) || [])[1];
-      if (m === undefined) return;
-      if (lastMinute.has(card) && lastMinute.get(card) !== m){
-        card.classList.remove('bgc-tick'); void card.offsetWidth; card.classList.add('bgc-tick');
-      }
-      lastMinute.set(card, m);
-    });
-  }, 500);
-  document.addEventListener('animationend', e=>{
-    if (e.animationName === 'bgc-tick') e.target.classList.remove('bgc-tick');
-  });
-
-  /* ===== Fundo: partículas de luz ===== */
-  const c = document.createElement('canvas');
-  c.id = 'bgc-sky';
-  c.setAttribute('aria-hidden','true');
-  document.body.prepend(c);
-  const ctx = c.getContext('2d');
-  let W=0, H=0, parts=[];
-  const rnd = (a,b)=>a+Math.random()*(b-a);
-  const mk = anyY => ({x:rnd(0,W), y:anyY?rnd(0,H):H+8, r:rnd(.4,1.9), vy:-rnd(.05,.24), vx:rnd(-.06,.06), a:rnd(.18,.7), p:rnd(0,6.28), s:rnd(.006,.024)});
-  function size(){
-    const d = Math.min(window.devicePixelRatio||1, 1.5);
-    W = innerWidth; H = innerHeight;
-    c.width = Math.round(W*d); c.height = Math.round(H*d);
-    ctx.setTransform(d,0,0,d,0,0);
-    const n = Math.round(Math.min(110, Math.max(35, W*H/18000)));
-    parts = Array.from({length:n}, ()=>mk(true));
-  }
-  function draw(time){
-    ctx.clearRect(0,0,W,H);
-        // partículas
-    for (const q of parts){
-      q.x += q.vx; q.y += q.vy; q.p += q.s;
-      if (q.y < -10 || q.x < -10 || q.x > W+10) Object.assign(q, mk(false));
-      const a = q.a * (.55 + .45*Math.sin(q.p));
-      ctx.beginPath(); ctx.arc(q.x,q.y,q.r*3,0,6.283); ctx.fillStyle=`rgba(30,189,184,${a*.12})`; ctx.fill();
-      ctx.beginPath(); ctx.arc(q.x,q.y,q.r,0,6.283); ctx.fillStyle=`rgba(170,250,244,${a})`; ctx.fill();
-    }
-  }
-  size(); addEventListener('resize', size);
-  if (reduce){ draw(0); return; }
-  let last = 0;
-  (function loop(t){
-    requestAnimationFrame(loop);
-    if (t - last < 33) return;      // ~30 quadros por segundo, leve para TV
-    last = t; draw(t);
-  })(0);
-})();
-</script>
-
-<audio id="bgc-hymn-player" autoplay preload="auto" playsinline></audio>
+<audio id="bgc-hymn-player" autoplay preload="metadata" playsinline></audio>
+<div id="bgc-audio-status" role="status" aria-live="polite" hidden></div>
 <script id="bgc-hymn-autoplay">
 (()=>{
-  const hymns=['https://github.com/DougPrates1987/bgc-reception-clock/releases/download/v1.0.0-test/ccb-hino-01.mp3','https://github.com/DougPrates1987/bgc-reception-clock/releases/download/v1.0.0-test/ccb-hino-02.mp3','https://github.com/DougPrates1987/bgc-reception-clock/releases/download/v1.0.0-test/ccb-hino-03.mp3'];
+  const base='https://github.com/DougPrates1987/bgc-reception-clock/releases/download/v1.0.0-test/';
+  const hymns=['ccb-hino-01.mp3','ccb-hino-02.mp3','ccb-hino-03.mp3'].map(name=>base+name);
   const player=document.getElementById('bgc-hymn-player');
-  // Sorteia apenas o primeiro hino a cada carregamento da página.
-  // Depois, segue a ordem normal e repete continuamente.
-  let current=Math.floor(Math.random()*hymns.length);
+  const notice=document.getElementById('bgc-audio-status');
+  let current=0, attempts=0, retryTimer=0, stallTimer=0, lastProgress=0;
+  const maxRetries=3;
   player.volume=1;
-  player.addEventListener('ended',()=>{current=(current+1)%hymns.length;start();});
-  const unlockWithGesture=()=>{
-    if(!player.paused)return;
-    const attempt=player.play();
-    if(attempt&&typeof attempt.catch==='function')attempt.catch(()=>{});
-  };
-  const removeUnlockListeners=()=>{
-    document.removeEventListener('pointerdown',unlockWithGesture);
-    document.removeEventListener('keydown',unlockWithGesture);
-  };
-  player.addEventListener('playing',removeUnlockListeners,{once:true});
-  // Browsers may block sound on page load. A click/tap or remote key anywhere
-  // in the page retries playback without adding a visible Play button.
-  document.addEventListener('pointerdown',unlockWithGesture);
-  document.addEventListener('keydown',unlockWithGesture);
-  function start(){
-    player.src=new URL(encodeURI(hymns[current]),document.baseURI).href;
-    player.load();
-    const attempt=player.play();
-    if(attempt&&typeof attempt.catch==='function')attempt.catch(()=>{});
+
+  function show(message, action){
+    notice.replaceChildren(document.createTextNode(message));
+    if(action){
+      const button=document.createElement('button');
+      button.type='button'; button.textContent='TOCAR HINOS';
+      button.style.cssText='margin-left:10px;padding:7px 11px;border:0;border-radius:5px;background:#1ebdb8;color:#00182e;font-weight:700;cursor:pointer';
+      button.addEventListener('click',()=>{ notice.hidden=true; start(true); },{once:true});
+      notice.append(' ',button);
+    }
+    notice.hidden=false;
   }
-  start();
+  function playCurrent(){
+    player.src=hymns[current];
+    player.load();
+    const promise=player.play();
+    if(promise&&promise.catch) promise.catch(error=>{
+      if(error&&error.name==='NotAllowedError') show('A TV bloqueou o início automático do áudio.',true);
+      else scheduleRetry('Falha ao iniciar o hino.');
+    });
+  }
+  function start(fromUser=false){
+    clearTimeout(retryTimer); clearTimeout(stallTimer);
+    attempts=fromUser?0:attempts;
+    playCurrent();
+  }
+  function next(){
+    clearTimeout(retryTimer); clearTimeout(stallTimer);
+    current=(current+1)%hymns.length; attempts=0; playCurrent();
+  }
+  function scheduleRetry(message){
+    clearTimeout(retryTimer);
+    attempts++;
+    if(attempts<=maxRetries){
+      show(message+' Tentando novamente ('+attempts+'/'+maxRetries+')…');
+      retryTimer=setTimeout(playCurrent,Math.min(15000,1500*Math.pow(2,attempts-1)));
+    }else{
+      current=(current+1)%hymns.length; attempts=0;
+      show(message+' Vou passar para o próximo hino.');
+      retryTimer=setTimeout(playCurrent,1800);
+    }
+  }
+  player.addEventListener('ended',next);
+  player.addEventListener('playing',()=>{attempts=0;lastProgress=player.currentTime;notice.hidden=true;});
+  player.addEventListener('timeupdate',()=>{lastProgress=player.currentTime;});
+  player.addEventListener('error',()=>scheduleRetry('Não consegui carregar este hino.'));
+  player.addEventListener('stalled',()=>watchStall());
+  player.addEventListener('waiting',()=>watchStall());
+  function watchStall(){
+    clearTimeout(stallTimer);
+    const wasPlaying=!player.paused;
+    stallTimer=setTimeout(()=>{
+      if(wasPlaying&&!player.paused&&player.currentTime<=lastProgress+0.25) scheduleRetry('O áudio parou de carregar.');
+    },18000);
+  }
+  const unlock=()=>{
+    if(player.paused) start(true);
+  };
+  document.addEventListener('pointerdown',unlock);
+  document.addEventListener('keydown',unlock);
+  playCurrent();
 })();
 </script>
 </body>
