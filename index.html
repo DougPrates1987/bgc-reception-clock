@@ -375,6 +375,12 @@ body:before{content:"";position:fixed;inset:0;pointer-events:none;background:rad
 .logo-transition img{animation:bgc-wordmark-glow var(--logo-cycle) ease-in-out infinite!important;filter:none!important}
 .logo-transition{filter:none!important}
 </style>
+<style id="bgc-vignette-tv-override">
+@media(prefers-reduced-motion:reduce){#bgc-vignette{display:flex!important}}
+#bgc-vignette .v-emblem .v1{animation:bgc-v-s1 var(--vcyc) ease-in-out forwards!important}
+#bgc-vignette .v-emblem .v2{animation:bgc-v-s2 var(--vcyc) ease-in-out forwards!important}
+#bgc-vignette .v-emblem .v3{animation:bgc-v-s3 var(--vcyc) ease-in-out forwards!important}
+</style>
 </head>
 <body>
 <main class="page">
@@ -506,6 +512,28 @@ sortClocks();updateClocks();setInterval(updateClocks,1000);setInterval(sortClock
 
 
 
+<script id="bgc-vignette-runtime">
+(()=>{
+  const logo=document.querySelector('.logo-transition img');
+  if(!logo) return;
+  const screen=document.createElement('div');
+  screen.id='bgc-vignette';
+  screen.setAttribute('aria-hidden','true');
+  screen.innerHTML='<div class="v-stage"><svg class="v-emblem" viewBox="250 280 850 920" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="gradV" gradientUnits="userSpaceOnUse" x1="330" x2="1020" y1="330" y2="1020"><stop offset="0" class="v1" stop-color="#6fe8e2"/><stop offset=".45" class="v2" stop-color="#1fbdb7"/><stop offset="1" class="v3" stop-color="#0b807c"/></linearGradient></defs><use href="#moldura"/><use class="m" href="#monograma"/></svg></div><div class="v-logo"><img alt=""></div><div class="v-praise">ALL PRAISE BE TO GOD</div>';
+  screen.querySelector('.v-logo img').src=logo.src;
+  document.body.append(screen);
+  function show(){
+    screen.classList.remove('show');
+    void screen.offsetWidth;
+    screen.classList.add('show');
+    setTimeout(()=>screen.classList.remove('show'),11000);
+  }
+  setTimeout(()=>{
+    show();
+    setInterval(show,180000);
+  },20000);
+})();
+</script>
 <audio id="bgc-hymn-player" autoplay preload="metadata" playsinline></audio>
 <div id="bgc-audio-status" role="status" aria-live="polite" hidden></div>
 <script id="bgc-hymn-autoplay">
