@@ -373,7 +373,11 @@ body:before{content:"";position:fixed;inset:0;pointer-events:none;background:rad
 .loader .s2{animation:s2 var(--logo-cycle) ease-in-out infinite!important}
 .loader .s3{animation:s3 var(--logo-cycle) ease-in-out infinite!important}
 .logo-transition{filter:none!important}
-.logo-transition img{opacity:0!important;animation:none!important}
+.logo-transition img{
+  opacity:1!important;
+  animation:none!important;
+  clip-path:inset(0 0 23.1% 0)!important
+}
 .logo-transition .pingpong-overlay{
   display:block!important;
   animation:bgc-wordmark-color-cycle var(--logo-cycle) ease-in-out infinite!important
@@ -384,7 +388,7 @@ body:before{content:"";position:fixed;inset:0;pointer-events:none;background:rad
   44%,56%{background-color:#EB1E3C}
 }
 @media(prefers-reduced-motion:reduce){
-  .logo-transition img{opacity:0!important;animation:none!important}
+  .logo-transition img{opacity:1!important;animation:none!important;clip-path:inset(0 0 23.1% 0)!important}
   .logo-transition .pingpong-overlay{animation:none!important;background-color:#1fbdb7!important}
 }
 </style>
