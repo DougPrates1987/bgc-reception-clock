@@ -372,8 +372,21 @@ body:before{content:"";position:fixed;inset:0;pointer-events:none;background:rad
 .loader .s1{animation:s1 var(--logo-cycle) ease-in-out infinite!important}
 .loader .s2{animation:s2 var(--logo-cycle) ease-in-out infinite!important}
 .loader .s3{animation:s3 var(--logo-cycle) ease-in-out infinite!important}
-.logo-transition img{animation:bgc-wordmark-glow var(--logo-cycle) ease-in-out infinite!important}
 .logo-transition{filter:none!important}
+.logo-transition img{opacity:0!important;animation:none!important}
+.logo-transition .pingpong-overlay{
+  display:block!important;
+  animation:bgc-wordmark-color-cycle var(--logo-cycle) ease-in-out infinite!important
+}
+@keyframes bgc-wordmark-color-cycle{
+  0%,8%,92%,100%{background-color:#1fbdb7}
+  22%,30%,70%,78%{background-color:#E1325F}
+  44%,56%{background-color:#EB1E3C}
+}
+@media(prefers-reduced-motion:reduce){
+  .logo-transition img{opacity:0!important;animation:none!important}
+  .logo-transition .pingpong-overlay{animation:none!important;background-color:#1fbdb7!important}
+}
 </style>
 <style id="bgc-vignette-tv-override">
 @media(prefers-reduced-motion:reduce){#bgc-vignette{display:flex!important}}
@@ -539,7 +552,14 @@ sortClocks();updateClocks();setInterval(updateClocks,1000);setInterval(sortClock
 <script id="bgc-hymn-autoplay">
 (()=>{
   const base='https://github.com/DougPrates1987/bgc-reception-clock/releases/download/v1.0.0-test/';
-  const hymns=['ccb-hino-01.mp3','ccb-hino-02.mp3','ccb-hino-03.mp3'].map(name=>base+name);
+  const hymns=['ccb-hino-01.mp3','ccb-hino-02.mp3','ccb-hino-03.mp3','ccb-hino-04.mp3'].map(name=>base+name);
+  function shuffle(){
+    for(let i=hymns.length-1;i>0;i--){
+      const j=Math.floor(Math.random()*(i+1));
+      [hymns[i],hymns[j]]=[hymns[j],hymns[i]];
+    }
+  }
+  shuffle();
   const player=document.getElementById('bgc-hymn-player');
   const notice=document.getElementById('bgc-audio-status');
   let current=0, attempts=0, retryTimer=0, stallTimer=0, lastProgress=0;
