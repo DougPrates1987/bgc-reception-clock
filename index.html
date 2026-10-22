@@ -593,7 +593,15 @@ sortClocks();updateClocks();setInterval(updateClocks,1000);setInterval(sortClock
   }
   function next(){
     clearTimeout(retryTimer); clearTimeout(stallTimer);
-    current=(current+1)%hymns.length; attempts=0; playCurrent();
+    if(current>=hymns.length-1){
+      const previous=hymns[current];
+      shuffle();
+      if(hymns.length>1&&hymns[0]===previous) [hymns[0],hymns[1]]=[hymns[1],hymns[0]];
+      current=0;
+    }else{
+      current++;
+    }
+    attempts=0; playCurrent();
   }
   function scheduleRetry(message){
     clearTimeout(retryTimer);
