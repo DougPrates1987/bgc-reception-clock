@@ -31,11 +31,21 @@ button{font:600 13px Poppins,Calibri,Arial,sans-serif;cursor:pointer}.btn{border
 .control:hover:not(:disabled){border-color:var(--teal);color:var(--teal-light)}.control.main{width:52px;height:52px;background:var(--teal);border-color:var(--teal);font-size:18px;color:#00364b}
 .volume{display:flex;align-items:center;gap:12px;max-width:400px;margin:12px auto 0;color:var(--soft);font-size:12px}.volume input{flex:1;accent-color:var(--teal)}.value{width:38px;text-align:right;font-weight:600;color:#a4eee9}
 .tracks{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:16px}
+.add-hymn{margin-top:20px;padding-top:17px;border-top:1px solid rgba(208,225,237,.15)}
+.add-hymn h3{margin:0;color:#a4eee9;font:600 14px Poppins,Calibri,Arial,sans-serif}
+.add-hymn p{margin:6px 0 13px;color:var(--muted);font-size:12px;line-height:1.5}
+.add-hymn form{display:grid;grid-template-columns:minmax(150px,.7fr) minmax(230px,1.3fr) auto;align-items:end;gap:10px}
+.add-hymn label{display:block;color:var(--soft);font-size:11px}
+.add-hymn input{display:block;width:100%;margin-top:5px;padding:10px;border:1px solid rgba(208,225,237,.25);border-radius:3px;background:rgba(2,8,20,.42);color:var(--white);font:12px Calibri,Arial,sans-serif}
+.add-hymn input::placeholder{color:#8195a7}
+.add-hymn input:focus{outline:1px solid var(--teal);border-color:var(--teal)}
+[hidden]{display:none!important}
 .track{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px;border:1px solid rgba(208,225,237,.14);border-radius:4px;background:rgba(2,8,20,.25)}
 .track strong{display:block;color:#f5fbfd;font:600 13px Poppins,Calibri,Arial,sans-serif}.track small{display:block;margin-top:3px;color:var(--muted);font-size:11px}
 .message{min-height:22px;margin-top:14px;color:#a4eee9;font-size:12px;text-align:center}.message.error{color:var(--bad)}
 .uid{margin-top:14px;padding-top:12px;border-top:1px solid rgba(208,225,237,.15);color:var(--soft);font:11px ui-monospace,Consolas,monospace;overflow-wrap:anywhere}.uid[hidden]{display:none}
 .note{color:var(--muted);font-size:12px;line-height:1.6}.note strong{color:#a4eee9}footer{text-align:center;color:#8fa4b6;font-size:11px;padding:2px 0 12px}
+@media(max-width:740px){.add-hymn form{grid-template-columns:1fr}.add-hymn form button{justify-self:start}}
 @media(max-width:600px){.brand-logo{width:min(160px,45vw);max-height:40px}.tag{font-size:8px;letter-spacing:1px;padding:6px 8px}.card{padding:16px}.tracks{grid-template-columns:1fr}.controls{gap:10px}}
 </style></head>
 <body>
@@ -61,6 +71,17 @@ button{font:600 13px Poppins,Calibri,Arial,sans-serif;cursor:pointer}.btn{border
 <div class="track"><div><strong>CCB Hymn 02</strong><small>Instrumental · Orchestra</small></div><button class="btn" data-track="ccb-hino-02.mp3" type="button" disabled>Play on TV</button></div>
 <div class="track"><div><strong>CCB Hymn 03</strong><small>Instrumental · Orchestra</small></div><button class="btn" data-track="ccb-hino-03.mp3" type="button" disabled>Play on TV</button></div>
 <div class="track"><div><strong>CCB Hymn 04</strong><small>Instrumental · Orchestra</small></div><button class="btn" data-track="ccb-hino-04.mp3" type="button" disabled>Play on TV</button></div>
+</div>
+<div id="customTracks" class="tracks" hidden></div>
+<div class="add-hymn">
+  <h3>Add a Hymn</h3>
+  <p>Add a public, direct HTTPS link to an MP3 file. The reception TV will add it to the shuffle playlist.</p>
+  <form id="addTrackForm">
+    <label>Hymn title<input id="trackTitle" type="text" maxlength="80" placeholder="Example: CCB Hymn 05" required></label>
+    <label>Direct MP3 link<input id="trackUrl" type="url" placeholder="https://example.com/hymn.mp3" required></label>
+    <button class="btn primary" id="addTrackButton" type="submit" disabled>Add to TV Library</button>
+  </form>
+  <div class="message" id="libraryMessage" role="status" aria-live="polite">Sign in to manage the shared hymn library.</div>
 </div></section>
 <section class="card note"><strong>Reception TV setup:</strong> Open the separate TV receiver test page and leave it running. These controls send commands to that TV; the TV plays the audio.</section>
 <footer>BGC · Reception Audio Control</footer></main>
