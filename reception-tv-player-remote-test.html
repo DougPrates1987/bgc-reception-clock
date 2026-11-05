@@ -559,7 +559,8 @@ sortClocks();updateClocks();setInterval(updateClocks,1000);setInterval(sortClock
 <script id="bgc-hymn-autoplay">
 (()=>{
   const base='https://github.com/DougPrates1987/bgc-reception-clock/releases/download/v1.0.0-test/';
-  const hymns=['ccb-hino-01.mp3','ccb-hino-02.mp3','ccb-hino-03.mp3','ccb-hino-04.mp3'].map(name=>base+name);
+  const builtinHymns=['ccb-hino-01.mp3','ccb-hino-02.mp3','ccb-hino-03.mp3','ccb-hino-04.mp3'].map(name=>base+name);
+  let hymns=builtinHymns.slice();
   function shuffle(){
     for(let i=hymns.length-1;i>0;i--){
       const j=Math.floor(Math.random()*(i+1));
@@ -608,8 +609,30 @@ sortClocks();updateClocks();setInterval(updateClocks,1000);setInterval(sortClock
     if(player.currentTime>3){player.currentTime=0;if(player.paused)player.play();return;}
     current=(current-1+hymns.length)%hymns.length;attempts=0;playCurrent();
   }
+  function setCustomTracks(trackList){
+    const currentUrl=player.currentSrc||player.src||hymns[current]||'';
+    const custom=Object.values(trackList||{}).filter(track=>track&&typeof track.url==='string')
+      .map(track=>track.url.trim()).filter(url=>{
+        try{const parsed=new URL(url);return parsed.protocol==='https:'&&parsed.pathname.toLowerCase().endsWith('.mp3');}
+        catch{return false;}
+      });
+    hymns=[...new Set([...builtinHymns,...custom])];
+    shuffle();
+    const index=hymns.indexOf(currentUrl);
+    if(index>=0)current=index;
+    else{current=0;attempts=0;playCurrent();}
+  }
+  function selectUrl(url){
+    let parsed;
+    try{parsed=new URL(String(url));}catch{return false;}
+    if(parsed.protocol!=='https:'||!parsed.pathname.toLowerCase().endsWith('.mp3'))return false;
+    const target=parsed.href;
+    let index=hymns.indexOf(target);
+    if(index<0){hymns.push(target);index=hymns.length-1;}
+    current=index;attempts=0;clearTimeout(retryTimer);clearTimeout(stallTimer);playCurrent();return true;
+  }
   function selectTrack(file){
-    if(!/^ccb-hino-0[1-4]\.mp3$/.test(String(file)))return false;
+    if(!/^ccb-hino-0[1-4]\\.mp3$/.test(String(file)))return false;
     const index=hymns.indexOf(base+file);
     if(index<0)return false;
     current=index;attempts=0;clearTimeout(retryTimer);clearTimeout(stallTimer);playCurrent();return true;
@@ -626,7 +649,7 @@ sortClocks();updateClocks();setInterval(updateClocks,1000);setInterval(sortClock
     const volume=Math.max(0,Math.min(1,Number(value)));
     if(Number.isFinite(volume))player.volume=volume;
   }
-  window.BGCReceptionPlayer={play,pause,next,previous,select:selectTrack,setVolume};
+  window.BGCReceptionPlayer={play,pause,next,previous,select:selectTrack,selectUrl,setCustomTracks,setVolume};
   function scheduleRetry(message){
     clearTimeout(retryTimer);attempts++;
     if(attempts<=maxRetries){
