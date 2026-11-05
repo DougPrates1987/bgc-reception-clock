@@ -4,6 +4,7 @@ import { firebaseConfig, CONTROL_PATH, TRACKS_PATH } from "./reception-firebase-
 
 const badge = document.getElementById("remoteControlBadge");
 function setBadge(text, state) {
+  if (!badge) return;
   badge.textContent = text;
   badge.dataset.state = state || "ready";
 }
