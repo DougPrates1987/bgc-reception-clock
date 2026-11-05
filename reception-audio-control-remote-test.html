@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#003058"><title>Reception Audio Control | BGC</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--navy:#003058;--deep:#001e38;--teal:#1ebdb8;--paper:#f6f4ee;--panel:#fff;--ink:#1c2430;--line:#e3e0d6;--muted:#6b7280;--good:#31745a;--bad:#a23b3b}
+*{box-sizing:border-box}body{margin:0;background:var(--paper);color:var(--ink);font:14px Poppins,Arial,sans-serif}
+.topbar{min-height:68px;padding:12px clamp(16px,4vw,44px);background:linear-gradient(120deg,var(--navy),var(--deep));color:#fff;display:flex;align-items:center;justify-content:space-between;gap:16px}
+.brand{font:600 20px Georgia,serif}.tag{font-size:10px;font-weight:700;letter-spacing:1.2px;color:#bcebe7;border:1px solid #ffffff3d;border-radius:20px;padding:7px 11px}
+main{width:min(980px,calc(100% - 32px));margin:32px auto 48px}h1{margin:0;color:var(--navy);font:600 clamp(27px,4vw,36px)/1.2 Georgia,serif}
+.lead{margin:8px 0 24px;color:#64778a;line-height:1.6}.card{background:var(--panel);border:1px solid var(--line);border-radius:12px;box-shadow:0 14px 36px #0030580b;margin-bottom:18px;padding:22px}
+.card-head{display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap}h2{margin:0;color:var(--navy);font:600 18px Georgia,serif}
+.statusline{display:flex;align-items:center;gap:8px;color:#687c8d;font-size:12px}.dot{width:8px;height:8px;border-radius:50%;background:#9aaab5}.dot.online{background:var(--good);box-shadow:0 0 0 4px #31745a18}.dot.offline{background:#c68b25}
+.authbox{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-top:17px;padding:14px;border:1px solid #e3eaf0;border-radius:8px;background:#f8fbfc;flex-wrap:wrap}
+.auth-copy{min-width:190px;flex:1}.auth-copy strong{display:block;color:#17354d}.auth-copy small{display:block;margin-top:4px;color:#778b99;line-height:1.5}
+button{font:600 13px Poppins,Arial,sans-serif;cursor:pointer}.btn{border:1px solid #cbd6df;background:#fff;color:var(--navy);border-radius:5px;padding:10px 14px}
+.btn:hover:not(:disabled){background:#f0f6f8}.btn:disabled{opacity:.45;cursor:not-allowed}.btn.primary{border-color:var(--teal);background:var(--teal);color:#00364b}
+.btn.primary:hover:not(:disabled){background:#43cec7}.btn.signout{font-size:11px;padding:7px 10px}
+.now{margin-top:18px;border-radius:9px;padding:18px;background:linear-gradient(120deg,var(--navy),#06496c);color:#fff}
+.now small{display:block;color:#a5e7e2;font-size:10px;font-weight:700;letter-spacing:1.4px}.now strong{display:block;margin-top:7px;font-size:19px}
+.controls{display:flex;justify-content:center;align-items:center;gap:14px;margin:18px 0 12px}
+.control{width:44px;height:44px;border-radius:50%;border:1px solid #ccd8df;background:#fff;color:var(--navy);font-size:16px}
+.control.main{width:52px;height:52px;background:var(--teal);border-color:var(--teal);font-size:18px;color:#00364b}
+.volume{display:flex;align-items:center;gap:12px;max-width:400px;margin:12px auto 0;color:#5e7688;font-size:12px}
+.volume input{flex:1;accent-color:var(--teal)}.value{width:38px;text-align:right;font-weight:600;color:var(--navy)}
+.tracks{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:16px}
+.track{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px;border:1px solid #e4eaee;border-radius:7px}
+.track strong{display:block;color:#17354d;font-size:13px}.track small{display:block;margin-top:3px;color:#8495a0;font-size:11px}
+.message{min-height:22px;margin-top:14px;color:#567086;font-size:12px;text-align:center}.message.error{color:var(--bad)}
+.uid{margin-top:14px;padding-top:12px;border-top:1px solid #e7edf0;color:#647b8b;font:11px ui-monospace,Consolas,monospace;overflow-wrap:anywhere}.uid[hidden]{display:none}
+.note{color:#758795;font-size:12px;line-height:1.6}.note strong{color:var(--navy)}footer{text-align:center;color:#8998a2;font-size:11px;padding:2px 0 12px}
+@media(max-width:600px){.brand{font-size:17px}.tag{font-size:8px;padding:6px 8px}.card{padding:16px}.tracks{grid-template-columns:1fr}.controls{gap:10px}}
+</style></head>
+<body>
+<header class="topbar"><div class="brand">Brazil Gem Commerce</div><div class="tag">REMOTE TV CONTROL · TEST</div></header>
+<main>
+<h1>Reception Audio Control</h1><p class="lead">Control the instrumental hymns playing on the reception TV.</p>
+<section class="card" aria-label="Google account connection">
+<div class="card-head"><h2>Account &amp; Connection</h2><div class="statusline"><span id="connectionDot" class="dot"></span><span id="connectionText">Connecting to Firebase…</span></div></div>
+<div class="authbox"><div class="auth-copy"><strong id="authTitle">Connect your Google account</strong><small id="authDetail">Sign in to send playback commands to the TV.</small></div>
+<button id="signIn" class="btn primary" type="button">Sign in with Google</button><button id="signOut" class="btn signout" type="button" hidden>Sign out</button></div>
+<div id="uidBox" class="uid" hidden></div></section>
+<section class="card" aria-label="Remote playback controls"><div class="card-head"><h2>Remote Playback</h2><div class="statusline"><span class="dot online"></span><span>TV advances automatically when each hymn ends</span></div></div>
+<div class="now"><small>LAST COMMAND SENT</small><strong id="lastCommand">No command sent yet</strong></div>
+<div class="controls"><button class="control" data-action="previous" type="button" aria-label="Previous hymn" title="Previous hymn" disabled>|◀</button>
+<button class="control main" data-action="play" type="button" aria-label="Play" title="Play" disabled>▶</button>
+<button class="control" data-action="pause" type="button" aria-label="Pause" title="Pause" disabled>Ⅱ</button>
+<button class="control" data-action="next" type="button" aria-label="Next hymn" title="Next hymn" disabled>▶|</button></div>
+<label class="volume"><span>Volume</span><input id="volume" type="range" min="0" max="100" value="100" disabled><span id="volumeValue" class="value">100%</span></label>
+<div class="message" id="message" role="status" aria-live="polite">Sign in with Google to enable the controls.</div></section>
+<section class="card" aria-label="Hymn library"><div class="card-head"><h2>Hymn Library</h2><span class="statusline">CCB · Instrumental Orchestra</span></div>
+<div class="tracks">
+<div class="track"><div><strong>CCB Hymn 01</strong><small>Instrumental · Orchestra</small></div><button class="btn" data-track="ccb-hino-01.mp3" type="button" disabled>Play on TV</button></div>
+<div class="track"><div><strong>CCB Hymn 02</strong><small>Instrumental · Orchestra</small></div><button class="btn" data-track="ccb-hino-02.mp3" type="button" disabled>Play on TV</button></div>
+<div class="track"><div><strong>CCB Hymn 03</strong><small>Instrumental · Orchestra</small></div><button class="btn" data-track="ccb-hino-03.mp3" type="button" disabled>Play on TV</button></div>
+<div class="track"><div><strong>CCB Hymn 04</strong><small>Instrumental · Orchestra</small></div><button class="btn" data-track="ccb-hino-04.mp3" type="button" disabled>Play on TV</button></div>
+</div></section>
+<section class="card note"><strong>Reception TV setup:</strong> Open the separate TV receiver test page and leave it running. These controls send commands to that TV; the TV plays the audio.</section>
+<footer>BGC · Reception Audio Control</footer></main>
+<script type="module" src="./reception-audio-control-remote-test.js"></script>
+</body></html>
