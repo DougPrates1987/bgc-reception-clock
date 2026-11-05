@@ -7,3 +7,4 @@ export const firebaseConfig = Object.freeze({
   messagingSenderId: "719015160349"
 });
 export const CONTROL_PATH = "receptionAudio/control";
+export const TRACKS_PATH = "receptionAudio/tracks";
