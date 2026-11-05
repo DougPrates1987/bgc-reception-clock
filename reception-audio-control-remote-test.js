@@ -1,7 +1,7 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/13.2.0/firebase-app.js";
 import { getAuth, GoogleAuthProvider, onAuthStateChanged, signInWithPopup, signOut } from "https://www.gstatic.com/firebasejs/13.2.0/firebase-auth.js";
 import { getDatabase, ref, set, onValue } from "https://www.gstatic.com/firebasejs/13.2.0/firebase-database.js";
-import { firebaseConfig, CONTROL_PATH } from "./reception-firebase-config.js";
+import { firebaseConfig, CONTROL_PATH, TRACKS_PATH } from "./reception-firebase-config.js";
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getDatabase(app);
@@ -17,6 +17,13 @@ const lastCommand = document.getElementById("lastCommand");
 const commandButtons = [...document.querySelectorAll("[data-action], [data-track]")];
 const volumeInput = document.getElementById("volume");
 const volumeValue = document.getElementById("volumeValue");
+const trackTitleInput = document.getElementById("trackTitle");
+const trackUrlInput = document.getElementById("trackUrl");
+const addTrackForm = document.getElementById("addTrackForm");
+const addTrackButton = document.getElementById("addTrackButton");
+const customTracksBox = document.getElementById("customTracks");
+const libraryMessage = document.getElementById("libraryMessage");
+let customTracks = [];
 let currentUser = null;
 let databaseConnected = false;
 function showMessage(text, isError = false) {
@@ -27,6 +34,7 @@ function updateControls() {
   const enabled = Boolean(currentUser);
   commandButtons.forEach(button => { button.disabled = !enabled; });
   volumeInput.disabled = !enabled;
+  addTrackButton.disabled = !enabled;
 }
 function updateConnection() {
   connectionDot.classList.toggle("online", databaseConnected);
@@ -39,6 +47,45 @@ onValue(ref(db, ".info/connected"), snapshot => {
 }, () => {
   databaseConnected = false;
   updateConnection();
+});
+function showLibraryMessage(text, isError = false) {
+  libraryMessage.textContent = text;
+  libraryMessage.classList.toggle("error", isError);
+}
+function renderCustomTracks() {
+  customTracksBox.replaceChildren();
+  customTracksBox.hidden = customTracks.length === 0;
+  for (const track of customTracks) {
+    const row = document.createElement("div");
+    row.className = "track";
+    const copy = document.createElement("div");
+    const title = document.createElement("strong");
+    title.textContent = track.title || "Untitled hymn";
+    const detail = document.createElement("small");
+    detail.textContent = "Custom · MP3";
+    copy.append(title, detail);
+    const playButton = document.createElement("button");
+    playButton.className = "btn";
+    playButton.type = "button";
+    playButton.textContent = "Play on TV";
+    playButton.disabled = !currentUser;
+    playButton.addEventListener("click", () => sendCommand("selectUrl", {
+      trackUrl: track.url, trackTitle: track.title, trackId: track.id
+    }));
+    row.append(copy, playButton);
+    customTracksBox.append(row);
+  }
+}
+onValue(ref(db, TRACKS_PATH), snapshot => {
+  const data = snapshot.val() || {};
+  customTracks = Object.values(data).filter(track => track && typeof track.url === "string");
+  renderCustomTracks();
+  showLibraryMessage(customTracks.length
+    ? customTracks.length + " custom hymn" + (customTracks.length === 1 ? "" : "s") + " shared with the reception TV."
+    : "No custom hymns added yet.");
+}, error => {
+  showLibraryMessage("Could not load the shared library. The database rules may need the tracks path enabled.", true);
+  console.error("Firebase hymn library error:", error);
 });
 onAuthStateChanged(auth, user => {
   currentUser = user;
@@ -66,6 +113,7 @@ signInButton.addEventListener("click", async () => {
   try {
     await signInWithPopup(auth, provider);
     showMessage("Google account connected.");
+    renderCustomTracks();
   } catch (error) {
     showMessage("Google sign-in failed: " + (error.code || error.message), true);
   }
@@ -74,6 +122,7 @@ signOutButton.addEventListener("click", async () => {
   try {
     await signOut(auth);
     showMessage("Signed out.");
+    renderCustomTracks();
   } catch (error) {
     showMessage("Sign-out failed: " + (error.code || error.message), true);
   }
@@ -91,6 +140,7 @@ async function sendCommand(action, extra = {}) {
   try {
     await set(ref(db, CONTROL_PATH), command);
     const label = action === "select" ? "Selected " + extra.trackId.replace(".mp3", "") :
+      action === "selectUrl" ? "Selected " + extra.trackTitle :
       action.charAt(0).toUpperCase() + action.slice(1);
     lastCommand.textContent = label + " · Sent to TV";
     showMessage("Command sent. The TV receiver page must be open to receive it.");
@@ -101,6 +151,37 @@ async function sendCommand(action, extra = {}) {
     showMessage(detail, true);
   }
 }
+addTrackForm.addEventListener("submit", async event => {
+  event.preventDefault();
+  if (!currentUser) {
+    showLibraryMessage("Sign in with Google before adding a hymn.", true);
+    return;
+  }
+  const title = trackTitleInput.value.trim();
+  const urlText = trackUrlInput.value.trim();
+  let parsed;
+  try { parsed = new URL(urlText); } catch {}
+  if (!title || !parsed || parsed.protocol !== "https:" || !parsed.pathname.toLowerCase().endsWith(".mp3")) {
+    showLibraryMessage("Enter a title and a public HTTPS link that points directly to an MP3 file.", true);
+    return;
+  }
+  addTrackButton.disabled = true;
+  showLibraryMessage("Adding the hymn to the shared library…");
+  const id = "custom-" + makeCommandId().replace(/[^a-zA-Z0-9_-]/g, "");
+  const track = { id, title, url: parsed.href, addedAt: Date.now() };
+  try {
+    await set(ref(db, TRACKS_PATH + "/" + id), track);
+    trackTitleInput.value = "";
+    trackUrlInput.value = "";
+    showLibraryMessage("Added " + title + " to the shared TV library.");
+  } catch (error) {
+    showLibraryMessage(error.code === "PERMISSION_DENIED"
+      ? "The database rules need read access for the TV and write access for your account at receptionAudio/tracks."
+      : "Could not add this hymn: " + (error.code || error.message), true);
+  } finally {
+    addTrackButton.disabled = !currentUser;
+  }
+});
 document.querySelectorAll("[data-action]").forEach(button => {
   button.addEventListener("click", () => sendCommand(button.dataset.action));
 });
