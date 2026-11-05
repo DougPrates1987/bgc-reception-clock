@@ -1,5 +1,5 @@
 export const firebaseConfig = Object.freeze({
-  apiKey: "AIzaSyDvB-nK8E-Rq_rZHVQbn2sPsPLE0dCN0EI",
+  apiKey: "AIzaSyDvB-nK8E-Rq_rZHVQbn2sPsPlEOdCN0EI",
   authDomain: "bgc-reception-audio-control.firebaseapp.com",
   databaseURL: "https://bgc-reception-audio-control-default-rtdb.asia-southeast1.firebasedatabase.app",
   projectId: "bgc-reception-audio-control",
