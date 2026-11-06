@@ -373,20 +373,27 @@ body:before{content:"";position:fixed;inset:0;pointer-events:none;background:rad
 .loader .s2{animation:s2 var(--logo-cycle) ease-in-out infinite!important}
 .loader .s3{animation:s3 var(--logo-cycle) ease-in-out infinite!important}
 .logo-transition{filter:none!important}
-.logo-transition img{
-  opacity:1!important;
-  clip-path:none!important;
-  filter:hue-rotate(0deg)!important;
+.logo-transition img{opacity:0!important;animation:none!important;clip-path:none!important;filter:none!important}
+.logo-transition .pingpong-overlay{
+  display:block!important;
+  background-color:#1fbdb7!important;
   animation:bgc-wordmark-color-match-final var(--logo-cycle) ease-in-out infinite!important
 }
-.logo-transition .pingpong-overlay{display:none!important;animation:none!important}
 @keyframes bgc-wordmark-color-match-final{
-  0%,8%,92%,100%{filter:hue-rotate(0deg)}
-  22%,30%,70%,78%{filter:hue-rotate(169deg)}
-  44%,56%{filter:hue-rotate(174deg)}
+  0%,8%,92%,100%{background-color:#1fbdb7}
+  22%,30%,70%,78%{background-color:#E1325F}
+  44%,56%{background-color:#EB1E3C}
+}
+#bgc-vignette .v-logo img{opacity:0!important;animation:none!important;filter:none!important}
+#bgc-vignette .v-logo .pingpong-overlay{display:block!important;background-color:#1fbdb7!important;animation:none!important}
+#bgc-vignette.show .v-logo .pingpong-overlay{animation:bgc-v-wordmark-color-match var(--vcyc) ease-in-out forwards!important}
+@keyframes bgc-v-wordmark-color-match{
+  0%,6%,94%,100%{background-color:#1fbdb7}
+  24%,30%,72%,78%{background-color:#E1325F}
+  46%,56%{background-color:#EB1E3C}
 }
 @media(prefers-reduced-motion:reduce){
-  .loader .s1,.loader .s2,.loader .s3,.logo-transition img{animation:none!important;filter:hue-rotate(0deg)!important}
+  .loader .s1,.loader .s2,.loader .s3,.logo-transition .pingpong-overlay,#bgc-vignette .v-logo .pingpong-overlay{animation:none!important;background-color:#1fbdb7!important}
 }
 </style>
 <style id="bgc-vignette-tv-override">
@@ -533,7 +540,7 @@ sortClocks();updateClocks();setInterval(updateClocks,1000);setInterval(sortClock
   const screen=document.createElement('div');
   screen.id='bgc-vignette';
   screen.setAttribute('aria-hidden','true');
-  screen.innerHTML='<div class="v-stage"><svg class="v-emblem" viewBox="250 280 850 920" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="gradV" gradientUnits="userSpaceOnUse" x1="330" x2="1020" y1="330" y2="1020"><stop offset="0" class="v1" stop-color="#6fe8e2"/><stop offset=".45" class="v2" stop-color="#1fbdb7"/><stop offset="1" class="v3" stop-color="#0b807c"/></linearGradient></defs><use href="#moldura"/><use class="m" href="#monograma"/></svg></div><div class="v-logo"><img alt=""></div><div class="v-praise">ALL PRAISE BE TO GOD</div>';
+  screen.innerHTML='<div class="v-stage"><svg class="v-emblem" viewBox="250 280 850 920" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="gradV" gradientUnits="userSpaceOnUse" x1="330" x2="1020" y1="330" y2="1020"><stop offset="0" class="v1" stop-color="#6fe8e2"/><stop offset=".45" class="v2" stop-color="#1fbdb7"/><stop offset="1" class="v3" stop-color="#0b807c"/></linearGradient></defs><use href="#moldura"/><use class="m" href="#monograma"/></svg></div><div class="v-logo"><img alt=""><div class="pingpong-overlay" aria-hidden="true"></div></div><div class="v-praise">ALL PRAISE BE TO GOD</div>';
   screen.querySelector('.v-logo img').src=logo.src;
   document.body.append(screen);
   function show(){
