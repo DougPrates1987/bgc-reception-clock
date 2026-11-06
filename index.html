@@ -369,29 +369,49 @@ body:before{content:"";position:fixed;inset:0;pointer-events:none;background:rad
 
 <style id="bgc-tv-logo-and-performance">
 :root{--logo-cycle:18s}
-.brand{animation:bgc-logo-hue-cycle var(--logo-cycle) ease-in-out infinite}
-@keyframes bgc-logo-hue-cycle{
-  0%,8%,92%,100%{filter:hue-rotate(0deg)}
-  22%,30%,70%,78%{filter:hue-rotate(169deg)}
-  44%,56%{filter:hue-rotate(174deg)}
+.brand{animation:none!important;filter:none!important}
+@keyframes bgc-accent-light{
+  0%,8%,92%,100%{stop-color:#6fe8e2}
+  22%,30%,70%,78%{stop-color:#ee88a2}
+  44%,56%{stop-color:#f37c8e}
 }
-.loader .s1,.loader .s2,.loader .s3{animation:none!important}
-.loader .s1{stop-color:#6fe8e2!important}
-.loader .s2{stop-color:#1fbdb7!important}
-.loader .s3{stop-color:#0b807c!important}
+@keyframes bgc-accent-mid{
+  0%,8%,92%,100%{color:#1fbdb7;stop-color:#1fbdb7}
+  22%,30%,70%,78%{color:#e1325f;stop-color:#e1325f}
+  44%,56%{color:#eb1e3c;stop-color:#eb1e3c}
+}
+@keyframes bgc-accent-dark{
+  0%,8%,92%,100%{stop-color:#0b807c}
+  22%,30%,70%,78%{stop-color:#9b1737}
+  44%,56%{stop-color:#a9122c}
+}
+.loader .s1{animation:bgc-accent-light var(--logo-cycle) ease-in-out infinite!important}
+.loader .s2{animation:bgc-accent-mid var(--logo-cycle) ease-in-out infinite!important}
+.loader .s3{animation:bgc-accent-dark var(--logo-cycle) ease-in-out infinite!important}
 .logo-transition{filter:none!important}
-.logo-transition img{opacity:1!important;animation:none!important;clip-path:none!important;filter:none!important}
-.logo-transition .pingpong-overlay{display:none!important;animation:none!important}
-#bgc-vignette .v-brand{filter:hue-rotate(0deg)}
-#bgc-vignette.show .v-brand{animation:bgc-logo-hue-cycle var(--vcyc) ease-in-out forwards!important}
-#bgc-vignette.show .v-emblem .v1{animation:none!important;stop-color:#6fe8e2!important}
-#bgc-vignette.show .v-emblem .v2{animation:none!important;stop-color:#1fbdb7!important}
-#bgc-vignette.show .v-emblem .v3{animation:none!important;stop-color:#0b807c!important}
+.logo-transition img{opacity:1!important;animation:none!important;clip-path:inset(0 0 28% 0)!important;filter:none!important}
+.logo-transition::after,#bgc-vignette .v-logo::after{
+  content:"COMMERCE";position:absolute;left:0;bottom:3%;width:100%;text-align:center;
+  color:#1fbdb7;font:600 clamp(15px,2.25vw,27px)/1 Calibri,Arial,sans-serif;
+  letter-spacing:clamp(3px,.55vw,7px);text-transform:uppercase;
+  animation:bgc-accent-mid var(--logo-cycle) ease-in-out infinite;
+  text-shadow:0 0 12px currentColor;pointer-events:none
+}
+#bgc-vignette .v-brand{filter:none}
+#bgc-vignette.show .v-brand{animation:none!important;filter:none!important}
+#bgc-vignette .v-emblem .v1{animation:bgc-accent-light var(--logo-cycle) ease-in-out infinite!important}
+#bgc-vignette .v-emblem .v2{animation:bgc-accent-mid var(--logo-cycle) ease-in-out infinite!important}
+#bgc-vignette .v-emblem .v3{animation:bgc-accent-dark var(--logo-cycle) ease-in-out infinite!important}
 #bgc-vignette .v-logo{filter:none!important}
-#bgc-vignette.show .v-logo img{opacity:1!important;animation:none!important;filter:none!important}
-#bgc-vignette .v-logo .pingpong-overlay{display:none!important;animation:none!important}
+#bgc-vignette .v-logo img{opacity:1!important;animation:none!important;clip-path:inset(0 0 28% 0)!important;filter:none!important}
 @media(prefers-reduced-motion:reduce){
-  .brand,#bgc-vignette.show .v-brand{animation:none!important;filter:hue-rotate(0deg)!important}
+  .loader .s1,.loader .s2,.loader .s3,
+  #bgc-vignette .v-emblem .v1,#bgc-vignette .v-emblem .v2,#bgc-vignette .v-emblem .v3,
+  .logo-transition::after,#bgc-vignette .v-logo::after{animation:none!important}
+  .loader .s1,#bgc-vignette .v-emblem .v1{stop-color:#6fe8e2!important}
+  .loader .s2,#bgc-vignette .v-emblem .v2{stop-color:#1fbdb7!important;color:#1fbdb7!important}
+  .loader .s3,#bgc-vignette .v-emblem .v3{stop-color:#0b807c!important}
+  .logo-transition::after,#bgc-vignette .v-logo::after{color:#1fbdb7!important}
 }
 </style>
 
