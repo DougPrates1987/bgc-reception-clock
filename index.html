@@ -574,7 +574,8 @@ sortClocks();updateClocks();setInterval(updateClocks,1000);setInterval(sortClock
 <script id="bgc-hymn-autoplay">
 (()=>{
   const base='https://github.com/DougPrates1987/bgc-reception-clock/releases/download/v1.0.0-test/';
-  const builtinHymns=['ccb-hino-01.mp3','ccb-hino-02.mp3','ccb-hino-03.mp3','ccb-hino-04.mp3','ccb-hino-05.mp3','ccb-hino-06.mp3','ccb-hino-07.mp3'].map(name=>base+name);
+  const hymnFiles=['ccb-hino-01.mp3','ccb-hino-02.mp3','ccb-hino-03.mp3','ccb-hino-04.mp3','ccb-hino-05.mp3','ccb-hino-06.mp3','ccb-hino-07.mp3','ccb-hino-08.mp3.mp3'];
+  const builtinHymns=hymnFiles.map(name=>base+name);
   let hymns=builtinHymns.slice();
   function shuffle(){
     for(let i=hymns.length-1;i>0;i--){
@@ -585,8 +586,7 @@ sortClocks();updateClocks();setInterval(updateClocks,1000);setInterval(sortClock
   shuffle();
   const player=document.getElementById('bgc-hymn-player');
   const notice=document.getElementById('bgc-audio-status');
-  let current=0, attempts=0, retryTimer=0, stallTimer=0, lastProgress=0;
-  const maxRetries=3;
+  let current=0, attempts=0, retryTimer=0, stallTimer=0, lastProgress=0, sourceToken=0;
   player.volume=1;
   function show(message, action){
     notice.replaceChildren(document.createTextNode(message));
@@ -599,16 +599,28 @@ sortClocks();updateClocks();setInterval(updateClocks,1000);setInterval(sortClock
     }
     notice.hidden=false;
   }
-  function playCurrent(){
+  function playCurrent(resumeAt=0){
+    clearTimeout(stallTimer);
+    const token=++sourceToken;
     player.src=hymns[current]; player.load();
-    const promise=player.play();
-    if(promise&&promise.catch)promise.catch(error=>{
-      if(error&&error.name==='NotAllowedError')show('The TV blocked automatic audio start.',true);
-      else scheduleRetry('Failed to start the hymn.');
-    });
+    const begin=()=>{
+      if(token!==sourceToken)return;
+      if(resumeAt>0&&Number.isFinite(player.duration)&&player.duration>resumeAt){
+        try{player.currentTime=Math.min(resumeAt,player.duration-0.25);}catch{}
+      }
+      const promise=player.play();
+      if(promise&&promise.catch)promise.catch(error=>{
+        if(error&&error.name==='NotAllowedError')show('The TV blocked automatic audio start.',true);
+        else scheduleRetry('Failed to start the hymn.');
+      });
+    };
+    if(resumeAt>0&&player.readyState<1)player.addEventListener('loadedmetadata',begin,{once:true});
+    else begin();
   }
   function start(fromUser=false){
-    clearTimeout(retryTimer);clearTimeout(stallTimer);attempts=fromUser?0:attempts;playCurrent();
+    clearTimeout(retryTimer);clearTimeout(stallTimer);
+    if(fromUser)attempts=0;
+    playCurrent(player.currentTime>0?player.currentTime:0);
   }
   function next(){
     clearTimeout(retryTimer);clearTimeout(stallTimer);
@@ -647,7 +659,7 @@ sortClocks();updateClocks();setInterval(updateClocks,1000);setInterval(sortClock
     current=index;attempts=0;clearTimeout(retryTimer);clearTimeout(stallTimer);playCurrent();return true;
   }
   function selectTrack(file){
-    if(!/^ccb-hino-0[1-7]\.mp3$/.test(String(file)))return false;
+    if(!/^ccb-hino-0[1-7]\.mp3$|^ccb-hino-08\.mp3\.mp3$/.test(String(file)))return false;
     const index=hymns.indexOf(base+file);
     if(index<0)return false;
     current=index;attempts=0;clearTimeout(retryTimer);clearTimeout(stallTimer);playCurrent();return true;
@@ -666,26 +678,28 @@ sortClocks();updateClocks();setInterval(updateClocks,1000);setInterval(sortClock
   }
   window.BGCReceptionPlayer={play,pause,next,previous,select:selectTrack,selectUrl,setCustomTracks,setVolume};
   function scheduleRetry(message){
-    clearTimeout(retryTimer);attempts++;
-    if(attempts<=maxRetries){
-      show(message+' Retrying ('+attempts+'/'+maxRetries+')…');
-      retryTimer=setTimeout(playCurrent,Math.min(15000,1500*Math.pow(2,attempts-1)));
-    }else{
-      current=(current+1)%hymns.length;attempts=0;show(message+' Moving to the next hymn.');
-      retryTimer=setTimeout(playCurrent,1800);
-    }
+    clearTimeout(retryTimer);clearTimeout(stallTimer);attempts++;
+    const resumeAt=Number.isFinite(player.currentTime)?player.currentTime:0;
+    const delay=Math.min(60000,2000*Math.pow(2,Math.min(attempts-1,5)));
+    show(message+' Retrying this hymn in '+Math.round(delay/1000)+' seconds…');
+    retryTimer=setTimeout(()=>playCurrent(resumeAt),delay);
   }
   player.addEventListener('ended',next);
-  player.addEventListener('playing',()=>{attempts=0;lastProgress=player.currentTime;notice.hidden=true;});
-  player.addEventListener('timeupdate',()=>{lastProgress=player.currentTime;});
+  player.addEventListener('playing',()=>{clearTimeout(stallTimer);attempts=0;lastProgress=player.currentTime;notice.hidden=true;});
+  player.addEventListener('timeupdate',()=>{lastProgress=player.currentTime;clearTimeout(stallTimer);});
   player.addEventListener('error',()=>scheduleRetry('Unable to load this hymn.'));
-  player.addEventListener('stalled',()=>watchStall());
-  player.addEventListener('waiting',()=>watchStall());
+  player.addEventListener('stalled',watchStall);
+  player.addEventListener('waiting',watchStall);
   function watchStall(){
-    clearTimeout(stallTimer);const wasPlaying=!player.paused;
-    stallTimer=setTimeout(()=>{if(wasPlaying&&!player.paused&&player.currentTime<=lastProgress+0.25)scheduleRetry('The audio stopped loading.');},18000);
+    clearTimeout(stallTimer);
+    if(player.paused)return;
+    const stalledAt=player.currentTime;
+    stallTimer=setTimeout(()=>{
+      if(!player.paused&&Math.abs(player.currentTime-stalledAt)<0.5&&player.readyState<3)
+        scheduleRetry('The audio is still buffering.');
+    },60000);
   }
-  const unlock=()=>{if(player.paused)start(true);};
+  const unlock=()=>{if(player.paused&&player.currentTime===0)start(true);};
   document.addEventListener('pointerdown',unlock);
   document.addEventListener('keydown',unlock);
   playCurrent();
