@@ -629,7 +629,7 @@ sortClocks();updateClocks();setInterval(updateClocks,1000);setInterval(sortClock
     current=index;attempts=0;clearTimeout(retryTimer);clearTimeout(stallTimer);playCurrent();return true;
   }
   function selectTrack(file){
-    if(!/^ccb-hino-0[1-7]\\.mp3$/.test(String(file)))return false;
+    if(!/^ccb-hino-0[1-7]\.mp3$/.test(String(file)))return false;
     const index=hymns.indexOf(base+file);
     if(index<0)return false;
     current=index;attempts=0;clearTimeout(retryTimer);clearTimeout(stallTimer);playCurrent();return true;
