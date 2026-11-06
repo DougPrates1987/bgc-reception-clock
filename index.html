@@ -373,7 +373,7 @@ body:before{content:"";position:fixed;inset:0;pointer-events:none;background:rad
 .loader .s2{animation:s2 var(--logo-cycle) ease-in-out infinite!important}
 .loader .s3{animation:s3 var(--logo-cycle) ease-in-out infinite!important}
 .logo-transition{filter:none!important}
-.logo-transition img{opacity:0!important;animation:none!important;clip-path:none!important;filter:none!important}
+.logo-transition img{opacity:1!important;animation:none!important;clip-path:none!important;filter:none!important}
 .logo-transition .pingpong-overlay{
   display:block!important;
   background-color:#1fbdb7!important;
@@ -384,7 +384,8 @@ body:before{content:"";position:fixed;inset:0;pointer-events:none;background:rad
   22%,30%,70%,78%{background-color:#E1325F}
   44%,56%{background-color:#EB1E3C}
 }
-#bgc-vignette .v-logo img{opacity:0!important;animation:none!important;filter:none!important}
+#bgc-vignette .v-logo{filter:none!important}
+#bgc-vignette .v-logo img{opacity:1!important;animation:none!important;filter:none!important}
 #bgc-vignette .v-logo .pingpong-overlay{display:block!important;background-color:#1fbdb7!important;animation:none!important}
 #bgc-vignette.show .v-logo .pingpong-overlay{animation:bgc-v-wordmark-color-match var(--vcyc) ease-in-out forwards!important}
 @keyframes bgc-v-wordmark-color-match{
