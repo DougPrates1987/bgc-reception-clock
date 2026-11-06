@@ -397,8 +397,8 @@ body:before{content:"";position:fixed;inset:0;pointer-events:none;background:rad
   animation:bgc-accent-mid var(--logo-cycle) ease-in-out infinite;
   text-shadow:0 0 12px currentColor;pointer-events:none
 }
-#bgc-vignette .v-brand{filter:none}
-#bgc-vignette.show .v-brand{animation:none!important;filter:none!important}
+#bgc-vignette .v-brand{display:flex;flex-direction:column;align-items:center;width:100%;filter:none}
+#bgc-vignette.show .v-brand{display:flex;flex-direction:column;align-items:center;width:100%;animation:none!important;filter:none!important} #bgc-vignette .v-stage{margin-left:auto!important;margin-right:auto!important}
 #bgc-vignette .v-emblem .v1{animation:bgc-accent-light var(--logo-cycle) ease-in-out infinite!important}
 #bgc-vignette .v-emblem .v2{animation:bgc-accent-mid var(--logo-cycle) ease-in-out infinite!important}
 #bgc-vignette .v-emblem .v3{animation:bgc-accent-dark var(--logo-cycle) ease-in-out infinite!important}
