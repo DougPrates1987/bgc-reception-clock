@@ -368,28 +368,25 @@ body:before{content:"";position:fixed;inset:0;pointer-events:none;background:rad
 
 
 <style id="bgc-tv-logo-and-performance">
-:root{--logo-cycle:8s}
+:root{--logo-cycle:18s}
 .loader .s1{animation:s1 var(--logo-cycle) ease-in-out infinite!important}
 .loader .s2{animation:s2 var(--logo-cycle) ease-in-out infinite!important}
 .loader .s3{animation:s3 var(--logo-cycle) ease-in-out infinite!important}
 .logo-transition{filter:none!important}
 .logo-transition img{
   opacity:1!important;
-  animation:none!important;
-  clip-path:inset(0 0 23.1% 0)!important
+  clip-path:none!important;
+  filter:hue-rotate(0deg)!important;
+  animation:bgc-wordmark-color-match-final var(--logo-cycle) ease-in-out infinite!important
 }
-.logo-transition .pingpong-overlay{
-  display:block!important;
-  animation:bgc-wordmark-color-cycle var(--logo-cycle) ease-in-out infinite!important
-}
-@keyframes bgc-wordmark-color-cycle{
-  0%,8%,92%,100%{background-color:#1fbdb7}
-  22%,30%,70%,78%{background-color:#E1325F}
-  44%,56%{background-color:#EB1E3C}
+.logo-transition .pingpong-overlay{display:none!important;animation:none!important}
+@keyframes bgc-wordmark-color-match-final{
+  0%,8%,92%,100%{filter:hue-rotate(0deg)}
+  22%,30%,70%,78%{filter:hue-rotate(169deg)}
+  44%,56%{filter:hue-rotate(174deg)}
 }
 @media(prefers-reduced-motion:reduce){
-  .logo-transition img{opacity:1!important;animation:none!important;clip-path:inset(0 0 23.1% 0)!important}
-  .logo-transition .pingpong-overlay{animation:none!important;background-color:#1fbdb7!important}
+  .loader .s1,.loader .s2,.loader .s3,.logo-transition img{animation:none!important;filter:hue-rotate(0deg)!important}
 }
 </style>
 <style id="bgc-vignette-tv-override">
