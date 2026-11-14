@@ -573,7 +573,7 @@ sortClocks();updateClocks();setInterval(updateClocks,1000);setInterval(sortClock
 <div id="bgc-audio-status" role="status" aria-live="polite" hidden></div>
 <script id="bgc-hymn-autoplay">
 (()=>{
-  const base='https://github.com/DougPrates1987/bgc-reception-clock/releases/download/v1.0.0-test/';
+  const base='https://tv.brasilgemcommerce.com/hinos/';
   const hymnFiles=['ccb-hino-01.mp3','ccb-hino-02.mp3','ccb-hino-03.mp3','ccb-hino-04.mp3','ccb-hino-05.mp3','ccb-hino-06.mp3','ccb-hino-07.mp3','ccb-hino-08.mp3.mp3'];
   const builtinHymns=hymnFiles.map(name=>base+name);
   let hymns=builtinHymns.slice();
@@ -642,7 +642,7 @@ sortClocks();updateClocks();setInterval(updateClocks,1000);setInterval(sortClock
       .map(track=>track.url.trim()).filter(url=>{
         try{const parsed=new URL(url);return parsed.protocol==='https:'&&parsed.pathname.toLowerCase().endsWith('.mp3');}
         catch{return false;}
-      });
+      }).filter(url=>!hymnFiles.includes(url.split('/').pop()));
     hymns=[...new Set([...builtinHymns,...custom])];
     shuffle();
     const index=hymns.indexOf(currentUrl);
@@ -687,7 +687,7 @@ sortClocks();updateClocks();setInterval(updateClocks,1000);setInterval(sortClock
   player.addEventListener('ended',next);
   player.addEventListener('playing',()=>{clearTimeout(stallTimer);attempts=0;lastProgress=player.currentTime;notice.hidden=true;});
   player.addEventListener('timeupdate',()=>{lastProgress=player.currentTime;clearTimeout(stallTimer);});
-  player.addEventListener('error',()=>scheduleRetry('Unable to load this hymn.'));
+  player.addEventListener('error',()=>{if(attempts>=2&&hymns.length>1){show('Skipping this hymn…');next();}else scheduleRetry('Unable to load this hymn.');});
   player.addEventListener('stalled',watchStall);
   player.addEventListener('waiting',watchStall);
   function watchStall(){
