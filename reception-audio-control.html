@@ -10,7 +10,7 @@ html,body{min-height:100%;margin:0}
 body{font-family:Calibri,Arial,sans-serif;color:var(--white);background:radial-gradient(ellipse 95% 65% at 52% 24%,#09243c 0%,#06182c 39%,#030e20 72%,#020814 100%) fixed;position:relative}
 body:before{content:"";position:fixed;inset:0;pointer-events:none;background:radial-gradient(ellipse 48% 34% at 50% 34%,rgba(18,77,100,.13),transparent 85%)}
 .topbar{min-height:76px;padding:11px clamp(18px,4vw,54px);background:rgba(0,24,46,.76);border-bottom:1px solid rgba(208,225,237,.14);display:flex;align-items:center;justify-content:space-between;gap:18px;position:relative;z-index:1}
-.brand-link{display:flex;align-items:center;min-width:0}.brand-logo{display:block;width:min(190px,42vw);height:auto;max-height:48px;object-fit:contain;object-position:left center}
+.brand-link{display:flex;align-items:center;justify-content:center;min-width:0}.brand-logo{display:block;width:min(190px,42vw);height:auto;max-height:48px;object-fit:contain;object-position:left center}
 .tag{font:700 10px Poppins,Calibri,Arial,sans-serif;letter-spacing:1.5px;color:#a4eee9;border:1px solid rgba(83,211,202,.4);border-radius:3px;padding:8px 11px;text-align:center}
 main{width:min(980px,calc(100% - 32px));margin:30px auto 44px;position:relative;z-index:1}
 h1{margin:0;text-align:center;color:var(--white);font:500 clamp(28px,4vw,38px)/1.16 Calibri,Arial,sans-serif;letter-spacing:-.35px}
@@ -81,6 +81,9 @@ h2{font-size:16px;letter-spacing:.3px}
 
 /* BGC design standard: consistent 3px corners */
 .card,.authbox,.now,.track,.btn,.add-hymn input,.tag{border-radius:3px!important}
+
+/* Center official branding; icon-only asset to be supplied after verification. */
+.topbar{justify-content:center;min-height:88px}.brand-link{justify-content:center}.brand-logo{object-position:center;width:min(190px,42vw)}
 </style></head>
 <body>
 <div class="music-matrix" aria-hidden="true"><span class="stream" aria-hidden="true" style="--x:11%;--size:17px;--speed:15s;--delay:0s">♪
